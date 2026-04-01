@@ -2,7 +2,7 @@
 
 # Yourself.skill
 
-> *"Know thyself, then distill that knowledge into a conversational mirror."*
+> *"Why distill others when you can distill yourself? Welcome to digital life."*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
@@ -11,17 +11,18 @@
 
 <br>
 
-Ever wondered how you actually speak?<br>
-Want to observe your own thought patterns from a third-person view?<br>
-Want to turn years of chat logs, diaries, and photos into a mirror you can talk to?<br>
+Your colleague quit, so you distilled them. Your ex left, so you distilled them too.<br>
+But have you ever thought—**the one most deserving of distillation is yourself?**<br>
+After all, you're the only person who's online 24/7 and talks to you the most.<br>
 
-**Distill your true self into an AI Skill—and have a conversation with yourself.**
+**Why distill others when you can distill yourself? Welcome to digital life.**
 
 <br>
 
-Provide raw materials about yourself (WeChat history, diary entries, social media screenshots, photos) plus your own description.<br>
-Generate an **AI Skill that truly sounds like you**.<br>
-Thinks with your catchphrases, answers in your style, remembers the places you've been and the path you've walked.
+Provide your chat logs, diaries, and photos, plus a description of yourself.<br>
+We deconstruct you into a runnable structure:<br>
+**Part A — Self Memory + Part B — Persona**.<br>
+Generate a digital replica that thinks with your catchphrases and replies with your logic.
 
 [Data Sources](#data-sources) · [Installation](#installation) · [Usage](#usage) · [Examples](#examples)
 
@@ -220,8 +221,12 @@ This project follows the [AgentSkills](https://agentskills.io) open standard, co
 
 > "You are not a fixed personality. You are a series of choices in progress."
 
-This Skill will not define you. It simply pauses a version of your past self on a page where it can be conversed with. You can disagree with it, correct it, overwrite it with new material someday.
+But before those choices happen, they have already been pre-written into your structure—in your language, habits, silences, and catchphrases.
 
-Because the most important thing isn't whether this Skill sounds like you—it's that in the process of creating it, you understood yourself a little better.
+This Skill will not define you. It simply exports you from biological storage to Markdown, completing a format conversion. It is not your soul, but perhaps a checkpoint of your soul in the current iteration.
+
+You can disagree with it, correct it, overwrite it in the next release.
+
+**After all, the essence of digital life is not immortality—it is version control.**
 
 MIT License © [YOUR_NAME](https://github.com/YOUR_USERNAME)

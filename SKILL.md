@@ -1,6 +1,6 @@
 ---
 name: create-yourself
-description: "Distill yourself into an AI Skill. Learn from your chat history, notes, and photos to generate a digital reflection of your persona and self-memory. | 把自己蒸馏成 AI Skill，通过学习聊天记录、笔记和照片，生成一个数字化的自我人格镜像。"
+description: "Why distill others when you can distill yourself? Deconstruct your chat history, diaries, and photos into a runnable digital self. | 与其蒸馏别人，不如蒸馏自己。将聊天记录、日记与照片解构为可运行的数字生命。"
 argument-hint: "[your-name-or-slug]"
 version: "1.0.0"
 user-invocable: true
