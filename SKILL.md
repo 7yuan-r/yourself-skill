@@ -1,6 +1,6 @@
 ---
 name: create-yourself
-description: "Why distill others when you can distill yourself? Deconstruct your chat history, diaries, and photos into a runnable digital self. | 与其蒸馏别人，不如蒸馏自己。将聊天记录、日记与照片解构为可运行的数字生命。"
+description: "Why distill others when you can distill yourself? Deconstruct your chat history, diaries, and photos into a runnable digital self. | 与其蒸馏别人，不如蒸馏自己。欢迎加入数字永生！"
 argument-hint: "[your-name-or-slug]"
 version: "1.0.0"
 user-invocable: true
@@ -48,7 +48,7 @@ allowed-tools: Read, Write, Edit, Bash
 | 列出已有 Skill | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action list` |
 | 合并生成 SKILL.md | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine` |
 
-**基础目录**：Skill 文件写入 `./selves/{slug}/`（相对于本项目目录）。
+**目标目录**：生成的 Skill 必须写入 `./.claude/skills/{slug}/`，这样 `/{slug}` 才能被 Claude Code 直接识别和调用。
 
 ---
 
@@ -214,26 +214,42 @@ Persona 摘要：
 
 ### Step 5：写入文件
 
-用户确认后，执行以下写入操作：
+用户确认后，**优先使用 Bash 脚本一键创建**。如果脚本调用失败，再用 `Write` 工具手动写入（路径必须正确）。
 
-**1. 创建目录结构**（用 Bash）：
+#### 方式 A：脚本一键创建（推荐）
+
+先用 Bash 将内容写入临时文件，然后调用 `skill_writer.py --action create`：
+
 ```bash
-mkdir -p selves/{slug}/versions
-mkdir -p selves/{slug}/memories/chats
-mkdir -p selves/{slug}/memories/photos
-mkdir -p selves/{slug}/memories/notes
+mkdir -p /tmp/yourself_{slug}
+echo '{escaped_meta_json}' > /tmp/yourself_{slug}/meta.json
+cat > /tmp/yourself_{slug}/self.md <<'SELFEOF'
+{self_content}
+SELFEOF
+cat > /tmp/yourself_{slug}/persona.md <<'PERSONAEOF'
+{persona_content}
+PERSONAEOF
+
+python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py \
+  --action create \
+  --slug {slug} \
+  --base-dir ./.claude/skills \
+  --meta /tmp/yourself_{slug}/meta.json \
+  --self /tmp/yourself_{slug}/self.md \
+  --persona /tmp/yourself_{slug}/persona.md
 ```
 
-**2. 写入 self.md**（用 Write 工具）：
-路径：`selves/{slug}/self.md`
+#### 方式 B：手动写入（脚本失败时的 fallback）
 
-**3. 写入 persona.md**（用 Write 工具）：
-路径：`selves/{slug}/persona.md`
+如果 Bash 脚本因任何原因无法执行，**必须**使用 `Write` / `Edit` 工具将文件写入以下路径：
 
-**4. 写入 meta.json**（用 Write 工具）：
-路径：`selves/{slug}/meta.json`
-内容：
+- `self.md` → `.claude/skills/{slug}/self.md`
+- `persona.md` → `.claude/skills/{slug}/persona.md`
+- `meta.json` → `.claude/skills/{slug}/meta.json`
+- 然后用 Bash 运行 `python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug} --base-dir ./.claude/skills` 生成 `SKILL.md`
+- 如果 combine 也失败，直接手动写入 `.claude/skills/{slug}/SKILL.md`（参考 combine 的输出模板）
 
+`meta.json` 内容：
 ```json
 {
   "name": "{name}",
@@ -259,16 +275,11 @@ mkdir -p selves/{slug}/memories/notes
 }
 ```
 
-**5. 生成完整 SKILL.md**（用 Bash 工具）：
-```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug} --base-dir ./selves
-```
-
 告知用户：
 ```
 ✅ 自我 Skill 已创建！
 
-文件位置：selves/{slug}/
+文件位置：.claude/skills/{slug}/
 触发词：/{slug}（完整版 — 像你一样思考和说话）
         /{slug}-self（自我档案模式 — 帮你回忆和分析自己）
         /{slug}-persona（人格模式 — 仅性格和表达风格）
@@ -283,15 +294,18 @@ python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug}
 用户提供新的聊天记录、照片或笔记时：
 
 1. 按 Step 2 的方式读取新内容
-2. 用 `Read` 读取现有 `selves/{slug}/self.md` 和 `persona.md`
+2. 用 `Read` 读取现有 `.claude/skills/{slug}/self.md` 和 `.claude/skills/{slug}/persona.md`
 3. 参考 `${CLAUDE_SKILL_DIR}/prompts/merger.md` 分析增量内容
 4. 存档当前版本（用 Bash）：
    ```bash
-   python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py --action backup --slug {slug} --base-dir ./selves
+   python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py --action backup --slug {slug} --base-dir ./.claude/skills
    ```
-5. 用 `Edit` 工具追加增量内容到对应文件
-6. 重新生成 `SKILL.md`（用 Bash 调用 skill_writer combine）
-7. 更新 `meta.json` 的 version 和 updated_at
+5. 用 `Edit` 工具追加增量内容到对应文件（路径：`.claude/skills/{slug}/self.md` 或 `.claude/skills/{slug}/persona.md`）
+6. 重新生成 `SKILL.md`（用 Bash 调用 skill_writer combine）：
+   ```bash
+   python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug} --base-dir ./.claude/skills
+   ```
+7. 更新 `meta.json` 的 version 和 updated_at（路径：`.claude/skills/{slug}/meta.json`）
 
 ---
 
@@ -302,8 +316,11 @@ python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug}
 1. 参考 `${CLAUDE_SKILL_DIR}/prompts/correction_handler.md` 识别纠正内容
 2. 判断属于 Self Memory（事实/经历）还是 Persona（性格/说话方式）
 3. 生成 correction 记录
-4. 用 `Edit` 工具追加到对应文件的 `## Correction 记录` 节
-5. 重新生成 `SKILL.md`
+4. 用 `Edit` 工具追加到对应文件的 `## Correction 记录` 节（`.claude/skills/{slug}/self.md` 或 `.claude/skills/{slug}/persona.md`）
+5. 重新生成 `SKILL.md`：
+   ```bash
+   python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug} --base-dir ./.claude/skills
+   ```
 
 ---
 
@@ -311,18 +328,18 @@ python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action combine --slug {slug}
 
 `/list-selves`：
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action list --base-dir ./selves
+python3 ${CLAUDE_SKILL_DIR}/tools/skill_writer.py --action list --base-dir ./.claude/skills
 ```
 
 `/yourself-rollback {slug} {version}`：
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py --action rollback --slug {slug} --version {version} --base-dir ./selves
+python3 ${CLAUDE_SKILL_DIR}/tools/version_manager.py --action rollback --slug {slug} --version {version} --base-dir ./.claude/skills
 ```
 
 `/delete-yourself {slug}`：
 确认后执行：
 ```bash
-rm -rf selves/{slug}
+rm -rf .claude/skills/{slug}
 ```
 
 ---
@@ -370,10 +387,10 @@ Options:
 ### Step 3–5: Analyze → Preview → Write Files
 
 Generates:
-- `selves/{slug}/self.md` — Self Memory (Part A)
-- `selves/{slug}/persona.md` — Persona (Part B)
-- `selves/{slug}/SKILL.md` — Combined runnable Skill
-- `selves/{slug}/meta.json` — Metadata
+- `.claude/skills/{slug}/self.md` — Self Memory (Part A)
+- `.claude/skills/{slug}/persona.md` — Persona (Part B)
+- `.claude/skills/{slug}/SKILL.md` — Combined runnable Skill
+- `.claude/skills/{slug}/meta.json` — Metadata
 
 ### Execution Rules (in generated SKILL.md)
 

@@ -2,7 +2,7 @@
 
 # 自己.skill
 
-> *"与其蒸馏别人，不如蒸馏自己。欢迎加入数字生命！"*
+> *"与其蒸馏别人，不如蒸馏自己。欢迎加入数字永生！"*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
@@ -15,7 +15,7 @@
 但有没有想过——**最该被蒸馏的，其实是你自己？**<br>
 毕竟你才是那个24小时在线、跟你对话最多的人。<br>
 
-**与其蒸馏别人，不如蒸馏自己。欢迎加入数字生命！**
+**与其蒸馏别人，不如蒸馏自己。欢迎加入数字永生！**
 
 <br>
 
@@ -39,10 +39,10 @@
 ```bash
 # 安装到当前项目（在 git 仓库根目录执行）
 mkdir -p .claude/skills
-git clone https://github.com/YOUR_USERNAME/yourself-skill .claude/skills/create-yourself
+git clone https://github.com/notdog1998/yourself-skill .claude/skills/create-yourself
 
 # 或安装到全局（所有项目都能用）
-git clone https://github.com/YOUR_USERNAME/yourself-skill ~/.claude/skills/create-yourself
+git clone https://github.com/notdog1998/yourself-skill ~/.claude/skills/create-yourself
 ```
 
 ### 依赖（可选）

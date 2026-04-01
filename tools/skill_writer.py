@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Skill 文件管理器
 
-管理自我 Skill 的文件操作：列出、创建目录、生成组合 SKILL.md。
+管理自我 Skill 的文件操作：列出、初始化目录、生成组合 SKILL.md、完整创建。
 
 Usage:
-    python3 skill_writer.py --action <list|init|combine> --base-dir <path> [--slug <slug>]
+    python3 skill_writer.py --action <list|init|create|combine> --base-dir <path> [--slug <slug>]
 """
 
 import argparse
@@ -144,11 +144,40 @@ user-invocable: true
     print(f"已生成 {skill_path}")
 
 
+def create_skill(base_dir: str, slug: str, meta: dict, self_content: str, persona_content: str):
+    """完整创建 Skill：初始化目录、写入 meta/self/persona、生成 SKILL.md"""
+    init_skill(base_dir, slug)
+
+    skill_dir = os.path.join(base_dir, slug)
+    now = datetime.now().isoformat()
+    meta['slug'] = slug
+    meta.setdefault('created_at', now)
+    meta['updated_at'] = now
+    meta['version'] = 'v1'
+    meta.setdefault('corrections_count', 0)
+
+    with open(os.path.join(skill_dir, 'meta.json'), 'w', encoding='utf-8') as f:
+        json.dump(meta, f, ensure_ascii=False, indent=2)
+
+    with open(os.path.join(skill_dir, 'self.md'), 'w', encoding='utf-8') as f:
+        f.write(self_content)
+
+    with open(os.path.join(skill_dir, 'persona.md'), 'w', encoding='utf-8') as f:
+        f.write(persona_content)
+
+    combine_skill(base_dir, slug)
+    print(f"✅ Skill 已创建：{skill_dir}")
+    print(f"   触发词：/{slug}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='Skill 文件管理器')
-    parser.add_argument('--action', required=True, choices=['list', 'init', 'combine'])
-    parser.add_argument('--base-dir', default='./selves', help='基础目录')
+    parser.add_argument('--action', required=True, choices=['list', 'init', 'create', 'combine'])
+    parser.add_argument('--base-dir', default='./.claude/skills', help='基础目录（默认：./.claude/skills）')
     parser.add_argument('--slug', help='自我代号')
+    parser.add_argument('--meta', help='meta.json 文件路径（create 时使用）')
+    parser.add_argument('--self', help='self.md 内容文件路径（create 时使用）')
+    parser.add_argument('--persona', help='persona.md 内容文件路径（create 时使用）')
 
     args = parser.parse_args()
 
@@ -159,6 +188,23 @@ def main():
             print("错误：init 需要 --slug 参数", file=sys.stderr)
             sys.exit(1)
         init_skill(args.base_dir, args.slug)
+    elif args.action == 'create':
+        if not args.slug:
+            print("错误：create 需要 --slug 参数", file=sys.stderr)
+            sys.exit(1)
+        meta = {}
+        if args.meta:
+            with open(args.meta, 'r', encoding='utf-8') as f:
+                meta = json.load(f)
+        self_content = ''
+        if args.self:
+            with open(args.self, 'r', encoding='utf-8') as f:
+                self_content = f.read()
+        persona_content = ''
+        if args.persona:
+            with open(args.persona, 'r', encoding='utf-8') as f:
+                persona_content = f.read()
+        create_skill(args.base_dir, args.slug, meta, self_content, persona_content)
     elif args.action == 'combine':
         if not args.slug:
             print("错误：combine 需要 --slug 参数", file=sys.stderr)
