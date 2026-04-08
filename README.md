@@ -17,7 +17,7 @@
 
 **与其蒸馏别人，不如直面自己。**
 欢迎加入：  
-> **Self Replay · 自我重演计划**
+  Self Replay · 自我重演计划
 <br>
 
 `自己.skill` 不是一个普通的 Persona 生成工具。  
