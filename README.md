@@ -2,6 +2,7 @@
 
 # 自己.skill
 
+
 > *"与其蒸馏别人，不如蒸馏自己。欢迎加入数字永生！"*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
